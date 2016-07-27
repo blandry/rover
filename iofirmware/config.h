@@ -1,0 +1,2 @@
+
+#define COMPANION_BAUD 9600
