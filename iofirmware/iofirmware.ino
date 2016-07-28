@@ -1,20 +1,42 @@
 #include "config.h"
-#include "messages.h"
+#include "CmdMessenger.h"
 #include "Adafruit_PWMServoDriver.h"
 
-char actuator_cmd_buff[sizeof(actuator_cmd_t)];
-actuator_cmd_t actuator_cmd;
-Adafruit_PWMServoDriver pwm_out;
+enum {
+  echo,
+  servo,
+};
+
+Adafruit_PWMServoDriver pwm_out = Adafruit_PWMServoDriver();
+CmdMessenger c = CmdMessenger(Serial,',',';','/');
+
+void on_echo(void){
+
+  int value = c.readBinArg<int>();
+  c.sendBinCmd(echo,value);
+  
+}
+
+void on_servo(void){
+
+  unsigned int id = c.readBinArg<unsigned int>();
+  unsigned int value = c.readBinArg<unsigned int>();
+  
+  pwm_out.setPWM(id, 0, value);
+}
+
+void attach_callbacks(void){
+  c.attach(echo, on_echo);
+  c.attach(servo, on_servo);
+}
 
 void setup() {
-    Serial.begin(COMPANION_BAUD);
+  Serial.begin(COMPANION_BAUD);
+  pwm_out.begin();
+  pwm_out.setPWMFreq(60);
+  attach_callbacks();
 }
 
 void loop() {
-    if (Serial.available() >= sizeof(actuator_cmd_t)) {
-        Serial.readBytes(actuator_cmd_buff, sizeof(actuator_cmd_t));
-        memcpy(&actuator_cmd, actuator_cmd_buff, sizeof(actuator_cmd_t));
-        
-        pwm_out.setPin(actuator_cmd.id, actuator_cmd.value);
-    }
+  c.feedinSerialData();
 }
