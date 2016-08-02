@@ -7,6 +7,9 @@ enum {
   servo,
 };
 
+// 1000000 / 60 / 4096
+double pulselength = 4.06901041667;
+
 Adafruit_PWMServoDriver pwm_out = Adafruit_PWMServoDriver();
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 
@@ -21,8 +24,8 @@ void on_servo(void){
 
   unsigned int id = c.readBinArg<unsigned int>();
   unsigned int value = c.readBinArg<unsigned int>();
-  
-  pwm_out.setPWM(id, 0, value);
+
+  pwm_out.setPWM(id, 0, ((double)value)/pulselength);
 }
 
 void attach_callbacks(void){
