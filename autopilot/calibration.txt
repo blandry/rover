@@ -1,0 +1,29 @@
+The wheel are number increasing from the front right (the front side has a panel) and in counter-clockwise order. So the wheel at the front right is zero, front left is 1.
+
+Servos 0-5 are the wheel speeds
+
+Servos 6-11 are the wheel yaws
+
+Speed command (left number is neutral, right number is forward max)
+0 - 1725 800
+1 - 1715 2200
+2 - 1900 2200
+3 - 1380 2200
+4 - 1840 800
+5 - 1750 800
+
+Yaw command (left number is middle, right number is pointing towards the rights)
+6 - 1500 2200
+7 - 1420 2200
+8 - 1465 2200
+9 - 1300 2200
+10 - 1575 2200 
+11 - 1460 2200
+
+Yawing command
+0 -
+1 -
+2 -
+3 -
+4 -
+5 -
