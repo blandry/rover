@@ -38,8 +38,8 @@ void Autopilot::execute_command() {
 
     // sends the command to the IO board
     for (int i=0; i<6; i++) {
-        send_pwm(i, wheel_speed_to_pwm(wheel_command.wheel_speed_cmds[i]));
-        send_pwm(i+6, wheel_yaw_to_pwm(wheel_command.wheel_yaw_cmds[i]));
+        send_pwm(i, wheel_speed_to_pwm(i, wheel_command.wheel_speed_cmds[i]));
+        send_pwm(i+6, wheel_yaw_to_pwm(i, wheel_command.wheel_yaw_cmds[i]));
 
         // assumes the command is executed instantenously (set the state as such)
         wheel_state.wheel_speed[i] = wheel_command.wheel_speed_cmds[i];
@@ -98,14 +98,18 @@ bool Autopilot::yaw_wheel(int wheel_num, double wheel_yaw_sp) {
     }
 }
 
-unsigned int Autopilot::wheel_yaw_to_pwm(double wheel_yaw) {
+unsigned int Autopilot::wheel_yaw_to_pwm(int wheel_num, double wheel_yaw) {
+
+    unsigned int pwm = (unsigned int)(wheel_yaw - wheel_zero_yaw_cmd[wheel_num]) * wheel_yaw_slope[wheel_num] + wheel_zero_yaw_cmd[wheel_num];
     
-    return 1500;
+    return pwm;
 }
 
-unsigned int Autopilot::wheel_speed_to_pwm(double wheel_speed) {
+unsigned int Autopilot::wheel_speed_to_pwm(int wheel_num, double wheel_speed) {
     
-    return 1500;
+    unsigned int pwm = (unsigned int)(wheel_speed - wheel_zero_speed_cmd[wheel_num]) * wheel_speed_slope[wheel_num] + wheel_zero_speed_cmd[wheel_num];
+    
+    return pwm;
 }
 
 void Autopilot::send_pwm(unsigned int servo_id, unsigned int value) {

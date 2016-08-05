@@ -26,14 +26,16 @@ public:
     void yaw_rate_to_command(double vyaw_sp);
     void vel_to_command(double vx_sp, double vy_sp);
     bool yaw_wheel(int wheel_num, double wheel_yaw_sp);
-    unsigned int wheel_yaw_to_pwm(double wheel_yaw);
-    unsigned int wheel_speed_to_pwm(double wheel_speed);
+    unsigned int wheel_yaw_to_pwm(int wheel_num, double wheel_yaw);
+    unsigned int wheel_speed_to_pwm(int wheel_num, double wheel_speed);
     void send_pwm(unsigned int servo_id, unsigned int value);
     
     const double max_wheel_yaw_step_size = 5.0;
     const double yawing_wheel_pos[6] = {45.0, -45.0, 0.0, 45.0, -45.0, 0.0};
     const unsigned int wheel_zero_yaw_cmd[6] = {1500, 1500, 1500, 1500, 1500, 1500};
-    const unsigned int wheel_zero_vel_cmd[6] = {1500, 1500, 1500, 1500, 1500, 1500};
+    const double wheel_yaw_slope[6] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+    const unsigned int wheel_zero_speed_cmd[6] = {1500, 1500, 1500, 1500, 1500, 1500};
+    const double wheel_speed_slope[6] = {1.0, -1.0, -1.0, -1.0, 1.0, 1.0};
     
     vel_setpoint_t vel_sepoint;
     wheel_state_t wheel_state;
