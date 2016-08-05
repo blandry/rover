@@ -1,20 +1,20 @@
 #pragma once
 
 struct vel_setpoint_t {
-    float vx;
-    float vy;
-    float vyaw;
-}
+    double vx;
+    double vy;
+    double vyaw;
+};
 
 struct wheel_state_t {
-    uint16_t wheel_yaw[6];
-    uint16_t wheel_speed[6];
-}
+    double wheel_yaw[6];
+    double wheel_speed[6];
+};
 
 struct wheel_command_t {
-    uint16_t wheel_yaw_cmds[6];
-    uint16_t wheel_speed_cmds[6];
-}
+    double wheel_yaw_cmds[6];
+    double wheel_speed_cmds[6];
+};
 
 class Autopilot {
 
@@ -23,10 +23,17 @@ public:
     void task_main();
     void setpoint_to_command();
     void execute_command();
+    void yaw_rate_to_command(double vyaw_sp);
+    void vel_to_command(double vx_sp, double vy_sp);
+    bool yaw_wheel(int wheel_num, double wheel_yaw_sp);
+    unsigned int wheel_yaw_to_pwm(double wheel_yaw);
+    unsigned int wheel_speed_to_pwm(double wheel_speed);
+    void send_pwm(unsigned int servo_id, unsigned int value);
     
-    const uint16_t max_servo_step_size = 5;
-    const uint16_t yawing_wheel_pos = {100, 100, 100, 100, 100, 100};
-    const uint16_t wheel_zero_vel_cmd = {150, 150, 150, 150, 150, 150};
+    const double max_wheel_yaw_step_size = 5.0;
+    const double yawing_wheel_pos[6] = {45.0, -45.0, 0.0, 45.0, -45.0, 0.0};
+    const unsigned int wheel_zero_yaw_cmd[6] = {1500, 1500, 1500, 1500, 1500, 1500};
+    const unsigned int wheel_zero_vel_cmd[6] = {1500, 1500, 1500, 1500, 1500, 1500};
     
     vel_setpoint_t vel_sepoint;
     wheel_state_t wheel_state;
