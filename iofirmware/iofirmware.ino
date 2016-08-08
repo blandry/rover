@@ -2,13 +2,9 @@
 #include "Adafruit_PWMServoDriver.h"
 #include <ArduinoJson.h>
 
-
-// 1000000 / 60 / 4096
-double pulselength = 4.06901041667;
-
+double pulselength = 4.06901041667; // 1000000 / 60 / 4096
 Adafruit_PWMServoDriver pwm_out = Adafruit_PWMServoDriver();
-StaticJsonBuffer<200> json_buffer;
-String serial_buffer;
+String json_string;
 
 void on_servo(JsonObject& msg){
     
@@ -33,10 +29,12 @@ void setup() {
 void loop() {
     
     while(Serial.available()) {
-        serial_buffer = Serial.readString();
-        JsonObject& msg = json_buffer.parseObject(serial_buffer);
-        int cmd_id = msg["cmd"];
+      
+        json_string = Serial.readString();          
+        StaticJsonBuffer<200> json_buffer;
+        JsonObject& msg = json_buffer.parseObject(json_string);
         
+        int cmd_id = msg["cmd"];        
         switch (cmd_id) {
             case 1:
                 on_servo(msg);
@@ -44,5 +42,6 @@ void loop() {
             default:
                 on_unknown(msg);
         }
+        
     }
 }
