@@ -27,30 +27,33 @@ def main():
     
     arduino = ArduinoBoard('/dev/tty.usbmodem1411', baud_rate=9600)
     
-    commands = [
-        ["echo","i"],
-        ["servo","II"],
-    ]
-    
-    c = CmdMessenger(arduino,commands)
-    
-    speed = 50
+    # commands = [
+    #     ["echo","i"],
+    #     ["servo","II"],
+    # ]
+    # 
+    # c = CmdMessenger(arduino,commands)
+    # 
+    # speed = 0
+    # yaw = 500
     
     while True:
         
-        c.send("servo", 0, s0 - speed)
-        c.send("servo", 1, s1 + speed)
-        c.send("servo", 2, s2 + speed)
-        c.send("servo", 3, s3 + speed)
-        c.send("servo", 4, s4 - speed)
-        c.send("servo", 5, s5 - speed)
+        # c.send("servo", 0, s0 - speed)
+        # c.send("servo", 1, s1 + speed)
+        # c.send("servo", 2, s2 + speed)
+        # c.send("servo", 3, s3 + speed)
+        # c.send("servo", 4, s4 - speed)
+        # c.send("servo", 5, s5 - speed)
+        # 
+        # c.send("servo", 6, y0 + yaw)
+        # c.send("servo", 7, y1 + yaw)
+        # c.send("servo", 8, y2 + yaw)
+        # c.send("servo", 9, y3 + yaw)
+        # c.send("servo", 10, y4 + yaw)
+        # c.send("servo", 11, y5 + yaw)
         
-        c.send("servo", 6, y0)
-        c.send("servo", 7, y1)
-        c.send("servo", 8, y2)
-        c.send("servo", 9, y3)
-        c.send("servo", 10, y4)
-        c.send("servo", 11, y5)
+        arduino.write("{'cmd':1,'id':5,'value':1200}")
  
 
 if __name__ == '__main__':

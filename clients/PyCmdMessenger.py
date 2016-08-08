@@ -164,6 +164,8 @@ class CmdMessenger:
         # Make something that looks like cmd,field1,field2,field3;
         compiled_bytes = self._byte_field_sep.join(fields) + self._byte_command_sep
 
+        print(compiled_bytes)
+
         # Send the message.
         self.board.write(compiled_bytes)
 

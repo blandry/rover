@@ -1,4 +1,4 @@
 cmake_minimum_required (VERSION 2.6)
 
 project (autopilot)
-add_executable(autopilot autopilot.cpp)
+add_executable(autopilot autopilot.cpp arduino-serial-lib.cpp)
