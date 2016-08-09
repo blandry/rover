@@ -31,7 +31,6 @@ public:
     unsigned int wheel_yaw_to_pwm(int wheel_num, double wheel_yaw);
     unsigned int wheel_speed_to_pwm(int wheel_num, double wheel_speed);
     void send_pwm(unsigned int servo_id, unsigned int value);
-    vel_setpoint_t vel_setpoint;
 
 private:
     int ioboard;
@@ -42,7 +41,8 @@ private:
     const double wheel_yaw_slope[6] = {-11.1, -11.1, -11.1, -11.1, -11.1, -11.1};
     const unsigned int wheel_zero_speed_cmd[6] = {1675, 1640, 1830, 1320, 1780, 1680};
     const double wheel_speed_slope[6] = {-1.0, 1.0, 1.0, 1.0, -1.0, -1.0};
-    
+
+    vel_setpoint_t vel_setpoint;
     wheel_state_t wheel_state;
     wheel_command_t wheel_command;
     

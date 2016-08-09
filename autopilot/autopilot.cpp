@@ -47,7 +47,7 @@ void Autopilot::execute_command() {
     // sends the command to the IO board
     for (int i=0; i<6; i++) {
         send_pwm(i, wheel_speed_to_pwm(i, wheel_command.wheel_speed_cmds[i]));
-        send_pwm(i+6, wheel_yaw_to_pwm(i, 45));
+        send_pwm(i+6, wheel_yaw_to_pwm(i, 0));
 
         // assumes the command is executed instantenously (set the state as such)
         wheel_state.wheel_speed[i] = wheel_command.wheel_speed_cmds[i];
@@ -123,7 +123,8 @@ unsigned int Autopilot::wheel_speed_to_pwm(int wheel_num, double wheel_speed) {
 void Autopilot::send_pwm(unsigned int servo_id, unsigned int value) {
 
     // TODO this should be done with a json library    
-    std::string pwm_cmd = std::string("{'cmd':1,'id':") + std::to_string(servo_id) + std::string(",'value':") + std::to_string(value) + std::string("}");   
+    std::string pwm_cmd = std::string("{'cmd':1,'id':") + std::to_string(servo_id) + 
+                          std::string(",'value':") + std::to_string(value) + std::string("}");   
     std::cout << pwm_cmd << std::endl;
                            
     serialport_write(ioboard, pwm_cmd.c_str());

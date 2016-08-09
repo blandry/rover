@@ -1,13 +1,5 @@
 from time import sleep
 from arduino import ArduinoBoard
-from PyCmdMessenger import CmdMessenger
-
-# y0 = 380
-# y1 = 350
-# y2 = 340
-# y3 = 300
-# y4 = 360
-# y5 = 350
 
 y0 = 1500
 y1 = 1420 - 20
@@ -25,36 +17,20 @@ s5 = 1750 - 70
 
 def main():
     
-    arduino = ArduinoBoard('/dev/tty.usbmodem1411', baud_rate=9600)
-    
-    # commands = [
-    #     ["echo","i"],
-    #     ["servo","II"],
-    # ]
-    # 
-    # c = CmdMessenger(arduino,commands)
-    # 
-    # speed = 0
-    # yaw = 500
+    arduino = ArduinoBoard('/dev/tty.usbmodem1411', baud_rate=115200)
     
     while True:
         
-        # c.send("servo", 0, s0 - speed)
-        # c.send("servo", 1, s1 + speed)
-        # c.send("servo", 2, s2 + speed)
-        # c.send("servo", 3, s3 + speed)
-        # c.send("servo", 4, s4 - speed)
-        # c.send("servo", 5, s5 - speed)
-        # 
-        # c.send("servo", 6, y0 + yaw)
-        # c.send("servo", 7, y1 + yaw)
-        # c.send("servo", 8, y2 + yaw)
-        # c.send("servo", 9, y3 + yaw)
-        # c.send("servo", 10, y4 + yaw)
-        # c.send("servo", 11, y5 + yaw)
-        
-        arduino.write("{'cmd':1,'id':5,'value':1200}")
- 
+        arduino.write(b"{'cmd':1,'id':6,'value':1500}")
+        sleep(2)
+        arduino.write(b"{'cmd':1,'id':7,'value':1500}")
+        sleep(2)
+        arduino.write(b"{'cmd':1,'id':8,'value':1500}")
+        arduino.write(b"{'cmd':1,'id':9,'value':1500}")
+        arduino.write(b"{'cmd':1,'id':10,'value':1500}")
+        arduino.write(b"{'cmd':1,'id':11,'value':1500}")
+        sleep(2)
+
 
 if __name__ == '__main__':
     main()
