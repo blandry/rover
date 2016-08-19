@@ -37,16 +37,16 @@ class Client:
         self.tk.mainloop()
   
     def leftKey(self, event):
-        self.cmd_out = "Left key pressed"
+        self.cmd_out = "LEFT"
 
     def rightKey(self, event):
-        self.cmd_out = "Right key pressed"
+        self.cmd_out = "RIGHT"
 
     def upKey(self, event):
-        self.cmd_out = "Up key pressed"
+        self.cmd_out = "FORWARD"
         
     def downKey(self, event):
-        self.cmd_out = "Down key pressed"
+        self.cmd_out = "BACKWARD"
         
     def leftKeyRelease(self, event):
         self.cmd_out = "NONE"

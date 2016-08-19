@@ -1,5 +1,8 @@
 #pragma once
 
+#include "std_msgs/String.h"
+
+
 struct vel_setpoint_t {
     double vx;
     double vy;
@@ -31,6 +34,7 @@ public:
     unsigned int wheel_yaw_to_pwm(int wheel_num, double wheel_yaw);
     unsigned int wheel_speed_to_pwm(int wheel_num, double wheel_speed);
     void send_pwm(unsigned int servo_id, unsigned int value);
+    void rover_cmds_callback(const std_msgs::String::ConstPtr& msg);
 
 private:
     int ioboard;
@@ -39,7 +43,7 @@ private:
     const double yawing_wheel_pos[6] = {45.0, -45.0, 0.0, 45.0, -45.0, 0.0};
     const unsigned int wheel_zero_yaw_cmd[6] = {1500, 1400, 1415, 1240, 1545, 1440};
     const double wheel_yaw_slope[6] = {-11.1, -11.1, -11.1, -11.1, -11.1, -11.1};
-    const unsigned int wheel_zero_speed_cmd[6] = {1675, 1640, 1830, 1320, 1780, 1680};
+    const unsigned int wheel_zero_speed_cmd[6] = {1675, 1620, 1810, 1320, 1760, 1680};
     const double wheel_speed_slope[6] = {-1.0, 1.0, 1.0, 1.0, -1.0, -1.0};
 
     vel_setpoint_t vel_setpoint;

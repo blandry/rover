@@ -5,13 +5,19 @@
 #include <stdlib.h>
 #include <iostream>
 #include "arduino-serial-lib.h"
+#include "ros/ros.h"
+#include "std_msgs/String.h"
 
 double rad_to_degrees(double x);
-
 
 Autopilot::Autopilot() {
     
     ioboard = serialport_init("/dev/tty.usbmodem1421", 115200);
+
+    // make sure the setpoints are initialized
+    vel_setpoint.vx = 0.0;
+    vel_setpoint.vy = 0.0;
+    vel_setpoint.vyaw = 0.0;
 }
 
 Autopilot::~Autopilot() {
@@ -21,7 +27,9 @@ Autopilot::~Autopilot() {
 
 void Autopilot::task_main() {
 
-    while (true) {        
+    while (true) {
+        // gets all the new ROS messages
+        ros::spinOnce();
         // converts the setpoint to a commands
         setpoint_to_command();
         // sends the command to the IO board
@@ -35,7 +43,7 @@ void Autopilot::task_main() {
 void Autopilot::setpoint_to_command() {
     
     // prioritize yawing over moving
-    if (vel_setpoint.vyaw > 0) {
+    if (fabs(vel_setpoint.vyaw) > 0) {
         yaw_rate_to_command(vel_setpoint.vyaw);
     } else {
         vel_to_command(vel_setpoint.vx, vel_setpoint.vy);
@@ -58,38 +66,44 @@ void Autopilot::execute_command() {
 /* converts a linear velocity to actuator commands */
 void Autopilot::vel_to_command(double vx_sp, double vy_sp) {
     
-    // makes sure we aren't yawing when moving
-    yaw_rate_to_command(0);
-    
     // compute the setpoints
     double wheel_yaw_sp = rad_to_degrees(atan2(vy_sp, vx_sp));
     double wheel_speed_sp = sqrt(pow(vx_sp, 2) + pow(vy_sp, 2));
+
+    // don't rotate the wheel more than 180, spin the wheels backward
+    if (wheel_yaw_sp < -90.0) {
+        wheel_yaw_sp += 180.0;
+        wheel_speed_sp *= -1.0;
+    } else if (wheel_yaw_sp > 90.0) {
+        wheel_yaw_sp -= 180.0;
+        wheel_speed_sp *= -1.0;
+    }
+    
+    ROS_INFO("vx=%f vy=%f yaw=%f spd=%f", vx_sp, vy_sp, wheel_yaw_sp, wheel_speed_sp);
     
     // sets the commands
-    bool wheels_ready = false;
+    bool wheels_ready = true;
     for (int i=0; i<6; i++) {
         // first place the wheels in the right yaw
         wheel_command.wheel_speed_cmds[i] = 0;
-        wheels_ready = (wheels_ready && yaw_wheel(i, wheel_yaw_sp));
+        wheels_ready = (yaw_wheel(i, wheel_yaw_sp) && wheels_ready);
     }
     
+    // if all the wheels are ready (in the right orientation)
     if (wheels_ready) {
         for (int i=0; i<6; i++) {
             wheel_command.wheel_speed_cmds[i] = wheel_speed_sp;
-        }        
+        }
     }
 }
 
-/* converts a rover angular velocity to wheel commands */
+/* TODO: converts a rover angular velocity to wheel commands */
 void Autopilot::yaw_rate_to_command(double vyaw_sp) {
-    // 
-    // // makes sure we aren't moving when yawing
-    // vel_to_command(0, 0);
-    // 
-    // for (int i=0; i<6; i++) {
-    //     // first place the wheel in the right yaw
-    //     
-    // }
+    
+    for (int i=0; i<6; i++) {
+        // first place the wheel in the right yaw
+        
+    }
 }
 
 /* Places a given wheel at an angle in degrees, returns true
@@ -152,13 +166,48 @@ void Autopilot::send_pwm(unsigned int servo_id, unsigned int value) {
     // std::cout << "ACK: " << receive_buf << std::endl;
 }
 
+void Autopilot::rover_cmds_callback(const std_msgs::String::ConstPtr& msg) {
+    
+    const char *cmd = msg->data.c_str();
+    ROS_INFO("ROS CMD: [%s]", cmd);
+    
+    double default_speed = 50.0;
+    
+    if (strcmp(cmd,"RIGHT")==0) {
+        vel_setpoint.vx = 0.0;
+        vel_setpoint.vy = -1.0 * default_speed;
+        vel_setpoint.vyaw = 0.0;
+    } else if (strcmp(cmd,"LEFT")==0) {
+        vel_setpoint.vx = 0.0;
+        vel_setpoint.vy = default_speed;
+        vel_setpoint.vyaw = 0.0;
+    } else if (strcmp(cmd,"FORWARD")==0) {
+        vel_setpoint.vx = default_speed;
+        vel_setpoint.vy = 0.0;
+        vel_setpoint.vyaw = 0.0;
+    } else if (strcmp(cmd,"BACKWARD")==0) {
+        vel_setpoint.vx = -1.0 * default_speed;
+        vel_setpoint.vy = 0.0;
+        vel_setpoint.vyaw = 0.0;
+    } else if (strcmp(cmd,"NONE")==0) {
+        vel_setpoint.vx = 0.0;
+        vel_setpoint.vy = 0.0;
+        vel_setpoint.vyaw = 0.0;
+    }
+}
+
 double rad_to_degrees(double x) {
-    return (x > 0 ? x : (2*M_PI + x)) * 360 / (2*M_PI);
+    return x * 360 / (2*M_PI);
 }
 
 int main(int argc, char *argv[]) {
-  
+
     Autopilot autopilot = Autopilot();
+    
+    ros::init(argc, argv, "Autopilot");
+    ros::NodeHandle n;
+    ros::Subscriber sub = n.subscribe("rover_cmds", 1000, &Autopilot::rover_cmds_callback, &autopilot);
+  
     autopilot.task_main();
     
     return 0;
