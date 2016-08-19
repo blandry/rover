@@ -1,28 +1,66 @@
-from time import sleep
-from arduino import ArduinoBoard
+from Tkinter import *
+import rospy
+from std_msgs.msg import String
+import threading
 
-y0 = 1500
-y1 = 1420 - 20
-y2 = 1465 - 50
-y3 = 1300 - 60
-y4 = 1575 - 30
-y5 = 1460 - 20
 
-s0 = 1725 - 50
-s1 = 1715 - 75
-s2 = 1900 - 70
-s3 = 1380 - 60
-s4 = 1840 - 60
-s5 = 1750 - 70
-
-def main():
+class Client:
     
-    arduino = ArduinoBoard('/dev/tty.usbmodem1421', baud_rate=115200)
-    
-    while True:
+    def __init__(self):
         
-        pass
+        self.cmd_out = "NONE"
+        
+        self.tk = Tk()
+        self.pub = rospy.Publisher('rover_cmds', String, queue_size=10)
+        self.pub_thread = threading.Thread(target=self.pub_thread_main)
+        rospy.init_node('RoverClient', anonymous=True)
+        self.rate = rospy.Rate(10) # 10hz
+        self.frame = Frame(self.tk, width=300, height=300)
+        self.tk.bind('<Left>', self.leftKey)
+        self.tk.bind('<Right>', self.rightKey)
+        self.tk.bind('<Up>', self.upKey)
+        self.tk.bind('<Down>', self.downKey)
+        self.tk.bind('<KeyRelease-Left>', self.leftKeyRelease)
+        self.tk.bind('<KeyRelease-Right>', self.rightKeyRelease)
+        self.tk.bind('<KeyRelease-Up>', self.upKeyRelease)
+        self.tk.bind('<KeyRelease-Down>', self.downKeyRelease)
+        self.frame.pack()
+        
+    def pub_thread_main(self):
+        while not rospy.is_shutdown():
+            rospy.loginfo(self.cmd_out)
+            self.pub.publish(self.cmd_out)
+            self.rate.sleep()
+
+    def start(self):
+        self.pub_thread.start()
+        self.tk.mainloop()
+  
+    def leftKey(self, event):
+        self.cmd_out = "Left key pressed"
+
+    def rightKey(self, event):
+        self.cmd_out = "Right key pressed"
+
+    def upKey(self, event):
+        self.cmd_out = "Up key pressed"
+        
+    def downKey(self, event):
+        self.cmd_out = "Down key pressed"
+        
+    def leftKeyRelease(self, event):
+        self.cmd_out = "NONE"
+
+    def rightKeyRelease(self, event):
+        self.cmd_out = "NONE"
+
+    def upKeyRelease(self, event):
+        self.cmd_out = "NONE"
+        
+    def downKeyRelease(self, event):
+        self.cmd_out = "NONE"
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    cl = Client()
+    cl.start()
