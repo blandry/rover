@@ -17,19 +17,11 @@ s5 = 1750 - 70
 
 def main():
     
-    arduino = ArduinoBoard('/dev/tty.usbmodem1411', baud_rate=115200)
+    arduino = ArduinoBoard('/dev/tty.usbmodem1421', baud_rate=115200)
     
     while True:
         
-        arduino.write(b"{'cmd':1,'id':6,'value':1500}")
-        sleep(2)
-        arduino.write(b"{'cmd':1,'id':7,'value':1500}")
-        sleep(2)
-        arduino.write(b"{'cmd':1,'id':8,'value':1500}")
-        arduino.write(b"{'cmd':1,'id':9,'value':1500}")
-        arduino.write(b"{'cmd':1,'id':10,'value':1500}")
-        arduino.write(b"{'cmd':1,'id':11,'value':1500}")
-        sleep(2)
+        pass
 
 
 if __name__ == '__main__':
