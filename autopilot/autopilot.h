@@ -45,6 +45,8 @@ private:
     const double wheel_yaw_slope[6] = {-11.1, -11.1, -11.1, -11.1, -11.1, -11.1};
     const unsigned int wheel_zero_speed_cmd[6] = {1675, 1620, 1810, 1320, 1760, 1680};
     const double wheel_speed_slope[6] = {-1.0, 1.0, 1.0, 1.0, -1.0, -1.0};
+    const int left_wheels[3] = {1, 2, 3};
+    const int right_wheels[3] = {0, 4, 5};
 
     vel_setpoint_t vel_setpoint;
     wheel_state_t wheel_state;

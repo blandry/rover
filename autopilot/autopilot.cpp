@@ -97,12 +97,24 @@ void Autopilot::vel_to_command(double vx_sp, double vy_sp) {
     }
 }
 
-/* TODO: converts a rover angular velocity to wheel commands */
+/* converts a rover angular velocity to wheel commands */
 void Autopilot::yaw_rate_to_command(double vyaw_sp) {
     
+    bool wheels_ready = true;
     for (int i=0; i<6; i++) {
-        // first place the wheel in the right yaw
-        
+        // first place the wheels in the right yaw
+        wheel_command.wheel_speed_cmds[i] = 0;
+        wheels_ready = (yaw_wheel(i, yawing_wheel_pos[i]) && wheels_ready);
+    }
+    
+    // if all the wheels are ready (in the right orientation)
+    if (wheels_ready) {
+        for (int i=0; i<3; i++) {
+            wheel_command.wheel_speed_cmds[right_wheels[i]] = vyaw_sp;
+        }
+        for (int i=0; i<3; i++) {
+            wheel_command.wheel_speed_cmds[left_wheels[i]] = -1.0 * vyaw_sp;
+        }
     }
 }
 
@@ -172,6 +184,7 @@ void Autopilot::rover_cmds_callback(const std_msgs::String::ConstPtr& msg) {
     ROS_INFO("ROS CMD: [%s]", cmd);
     
     double default_speed = 50.0;
+    double default_yawing_speed = 25.0;
     
     if (strcmp(cmd,"RIGHT")==0) {
         vel_setpoint.vx = 0.0;
@@ -193,6 +206,14 @@ void Autopilot::rover_cmds_callback(const std_msgs::String::ConstPtr& msg) {
         vel_setpoint.vx = 0.0;
         vel_setpoint.vy = 0.0;
         vel_setpoint.vyaw = 0.0;
+    } else if (strcmp(cmd,"YAWLEFT")==0) {
+        vel_setpoint.vx = 0.0;
+        vel_setpoint.vy = 0.0;
+        vel_setpoint.vyaw = default_yawing_speed;
+    } else if (strcmp(cmd,"YAWLEFT")==0) {
+        vel_setpoint.vx = 0.0;
+        vel_setpoint.vy = 0.0;
+        vel_setpoint.vyaw = -1.0 * default_yawing_speed;    
     }
 }
 

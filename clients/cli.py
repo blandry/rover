@@ -24,6 +24,11 @@ class Client:
         self.tk.bind('<KeyRelease-Right>', self.rightKeyRelease)
         self.tk.bind('<KeyRelease-Up>', self.upKeyRelease)
         self.tk.bind('<KeyRelease-Down>', self.downKeyRelease)
+        self.tk.bind('<q>', self.qKey)
+        self.tk.bind('<w>', self.wKey)
+        self.tk.bind('<KeyRelease-q>', self.qKeyRelease)
+        self.tk.bind('<KeyRelease-w>', self.wKeyRelease)
+
         self.frame.pack()
         
     def pub_thread_main(self):
@@ -48,6 +53,12 @@ class Client:
     def downKey(self, event):
         self.cmd_out = "BACKWARD"
         
+    def qKey(self, event):
+        self.cmd_out = "YAWLEFT"
+        
+    def wKey(self, event):
+        self.cmd_out = "YAWRIGHT"
+        
     def leftKeyRelease(self, event):
         self.cmd_out = "NONE"
 
@@ -58,6 +69,12 @@ class Client:
         self.cmd_out = "NONE"
         
     def downKeyRelease(self, event):
+        self.cmd_out = "NONE"
+        
+    def qKeyRelease(self, event):
+        self.cmd_out = "NONE"
+        
+    def wKeyRelease(self, event):
         self.cmd_out = "NONE"
 
 
