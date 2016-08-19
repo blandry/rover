@@ -47,7 +47,7 @@ void Autopilot::execute_command() {
     // sends the command to the IO board
     for (int i=0; i<6; i++) {
         send_pwm(i, wheel_speed_to_pwm(i, wheel_command.wheel_speed_cmds[i]));
-        send_pwm(i+6, wheel_yaw_to_pwm(i, 25));
+        send_pwm(i+6, wheel_yaw_to_pwm(i, wheel_command.wheel_yaw_cmds[i]));
 
         // assumes the command is executed instantenously (set the state as such)
         wheel_state.wheel_speed[i] = wheel_command.wheel_speed_cmds[i];
