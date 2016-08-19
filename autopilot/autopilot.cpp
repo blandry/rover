@@ -11,7 +11,7 @@ double rad_to_degrees(double x);
 
 Autopilot::Autopilot() {
     
-    ioboard = serialport_init("/dev/tty.usbmodem1411", 115200);
+    ioboard = serialport_init("/dev/tty.usbmodem1421", 115200);
 }
 
 Autopilot::~Autopilot() {
@@ -20,8 +20,8 @@ Autopilot::~Autopilot() {
 }
 
 void Autopilot::task_main() {
-        
-    while (true) {
+
+    while (true) {        
         // converts the setpoint to a commands
         setpoint_to_command();
         // sends the command to the IO board
@@ -47,7 +47,7 @@ void Autopilot::execute_command() {
     // sends the command to the IO board
     for (int i=0; i<6; i++) {
         send_pwm(i, wheel_speed_to_pwm(i, wheel_command.wheel_speed_cmds[i]));
-        send_pwm(i+6, wheel_yaw_to_pwm(i, 0));
+        send_pwm(i+6, wheel_yaw_to_pwm(i, 25));
 
         // assumes the command is executed instantenously (set the state as such)
         wheel_state.wheel_speed[i] = wheel_command.wheel_speed_cmds[i];
@@ -121,14 +121,35 @@ unsigned int Autopilot::wheel_speed_to_pwm(int wheel_num, double wheel_speed) {
 }
 
 void Autopilot::send_pwm(unsigned int servo_id, unsigned int value) {
+    
+    char send_buf[100];
+    
+    send_buf[0] = '1'; // the command id corresponding to servo cmds
+    send_buf[1] = ',';
+    
+    char servo_id_char[100];
+    sprintf(servo_id_char, "%i", servo_id);
+    memcpy(send_buf + 2, servo_id_char, strlen(servo_id_char)); // removing trailing NULL character
 
-    // TODO this should be done with a json library    
-    std::string pwm_cmd = std::string("{'cmd':1,'id':") + std::to_string(servo_id) + 
-                          std::string(",'value':") + std::to_string(value) + std::string("}");   
-    std::cout << pwm_cmd << std::endl;
-                           
-    serialport_write(ioboard, pwm_cmd.c_str());
+    send_buf[2 + strlen(servo_id_char)] = ',';
+    
+    char value_char[100];
+    sprintf(value_char, "%i", value);
+    memcpy(send_buf + 2 + strlen(servo_id_char) + 1, value_char, strlen(value_char)); // removing trailing NULL character
+    
+    send_buf[2 + strlen(servo_id_char) + 1 + strlen(value_char)] = ';';
+
+    // send_buf[2 + strlen(servo_id_char) + 1 + strlen(value_char) + 1] = NULL;
+    // std::cout << "CMD: " << send_buf << std::endl;
+    
+    for (int i=0; i<(2+strlen(servo_id_char)+1+strlen(value_char)+1); i++) {
+        serialport_writebyte(ioboard, send_buf[i]);
+    }
     serialport_flush(ioboard);
+
+    // char receive_buf[100];
+    // serialport_read_until(ioboard, receive_buf, ';', sizeof(receive_buf), 1000);
+    // std::cout << "ACK: " << receive_buf << std::endl;
 }
 
 double rad_to_degrees(double x) {

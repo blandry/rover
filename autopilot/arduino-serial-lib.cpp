@@ -26,8 +26,8 @@ int serialport_init(const char* serialport, int baud)
     struct termios toptions;
     int fd;
     
-    fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
-    //fd = open(serialport, O_RDWR | O_NONBLOCK );
+    //fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
+    fd = open(serialport, O_RDWR | O_NONBLOCK );
     
     if (fd == -1)  {
         perror("serialport_init: Unable to open port ");
@@ -78,8 +78,8 @@ int serialport_init(const char* serialport, int baud)
 
     // see: http://unixwiz.net/techtips/termios-vmin-vtime.html
     toptions.c_cc[VMIN]  = 0;
-    //toptions.c_cc[VTIME] = 0;
-    toptions.c_cc[VTIME] = 20;
+    toptions.c_cc[VTIME] = 0;
+    //toptions.c_cc[VTIME] = 20;
     
     tcsetattr(fd, TCSANOW, &toptions);
     if( tcsetattr(fd, TCSAFLUSH, &toptions) < 0) {
