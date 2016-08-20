@@ -210,7 +210,7 @@ void Autopilot::rover_cmds_callback(const std_msgs::String::ConstPtr& msg) {
         vel_setpoint.vx = 0.0;
         vel_setpoint.vy = 0.0;
         vel_setpoint.vyaw = default_yawing_speed;
-    } else if (strcmp(cmd,"YAWLEFT")==0) {
+    } else if (strcmp(cmd,"YAWRIGHT")==0) {
         vel_setpoint.vx = 0.0;
         vel_setpoint.vy = 0.0;
         vel_setpoint.vyaw = -1.0 * default_yawing_speed;    
