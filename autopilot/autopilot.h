@@ -19,6 +19,11 @@ struct wheel_command_t {
     double wheel_speed_cmds[6];
 };
 
+struct mast_setpoint_t {
+    unsigned int mast_pitch;
+    unsigned int mast_yaw;
+};
+
 
 class Autopilot {
 
@@ -38,12 +43,12 @@ public:
 
 private:
     int ioboard;
-        
+
     const double max_wheel_yaw_step_size = 5.0;
     const double yawing_wheel_pos[6] = {45.0, -45.0, 0.0, 45.0, -45.0, 0.0};
-    const unsigned int wheel_zero_yaw_cmd[6] = {1500, 1400, 1415, 1240, 1545, 1440};
+    const unsigned int wheel_zero_yaw_cmd[6] = {1500, 1400, 1415, 1240, 1330, 1325};
     const double wheel_yaw_slope[6] = {-11.1, -11.1, -11.1, -11.1, -11.1, -11.1};
-    const unsigned int wheel_zero_speed_cmd[6] = {1675, 1620, 1810, 1320, 1760, 1680};
+    const unsigned int wheel_zero_speed_cmd[6] = {1400, 1400, 1390, 1390, 1375, 1400};
     const double wheel_speed_slope[6] = {-1.0, 1.0, 1.0, 1.0, -1.0, -1.0};
     const int left_wheels[3] = {1, 2, 3};
     const int right_wheels[3] = {0, 4, 5};
@@ -51,7 +56,8 @@ private:
     vel_setpoint_t vel_setpoint;
     wheel_state_t wheel_state;
     wheel_command_t wheel_command;
-    
+    mast_setpoint_t mast_setpoint;
+
 };
 
 template <typename T> int sgn(T val) {
